@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="utf-8">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width">
+	<title>背包问题</title>
+</head>
+<body>
+<div id="box"></div>
+<div id="box2"></div>
+<div id="box3"></div>
+<div >==================</div>
+<div id="fArrBox"></div>
+<script language="javascript">
+		
+		//背包问题
+
+		var weights     =   [2, 2, 6, 5, 4]
+		var values      =   [6, 3, 5, 4, 6]
+		//背包容量
+		var contain     = 10;
+		//物品总数
+		var n = weights.length
+
+		var selectArr = []
+
+		
+		var fArr = knapsake( weights, values, contain );
+
+
+		selectArr = traceback(fArr, n, contain).reverse()
+
+
+		//页面打印
+		writeDom($("box"),  "价值:  ["+values+"]")
+		writeDom($("box2"), "重量:  ["+weights+"]")
+		
+
+		var htmlStr = "物品总数:  "+n+"<br>"
+		htmlStr += "背包容量:  "+contain+"<br>"
+		htmlStr += "背包装入 最大价值:  <span style='font-size:26px;color:#f63;'>"+fArr[n-1][contain-1]+"</span>"+"<br>"
+
+		writeDom($("box3"), htmlStr)
+
+		htmlStr += "选取物品编码：<span style='font-size:26px;color:#f63;'>"+selectArr.toString()+"</span><br>"
+		writeDom($("box3"), htmlStr)
+
+		//-----------------------------------
+		//打印 f数组
+		var htmlStr = ""
+		for(var i in fArr){
+			var arr  = fArr[i]
+			htmlStr += "<br>"
+			for(var j in arr){
+				htmlStr += arr[j]+","
+			}
+		}
+		writeDom($("fArrBox"), htmlStr)
+
+		function knapsake(weights, values, w){
+				//商品总数
+				var goodsTotal = weights.length
+				
+				var f = []
+				//先循环，商品个数
+				for( var i=0;i<goodsTotal;i++ ){
+
+					f[i] = []
+
+					Q("第"+i+"个商品"+  " --- 容量："+ weights[i]+  " --- 价值："+ values[i])
+
+					//循环背包 容量
+					for(var j=0;j<=w;j++){
+
+						//设定初始化赋值 第一层，商品价值 （很重要，第一层的数值，决定下面的coat花销）
+						if( i==0 ){
+							if(j<weights[i]){
+								//如果，背包容器，小于物品大小
+								f[i][j] = 0
+							}else{
+								//背包容器，可以放下物品
+								f[i][j] = values[0]
+							}
+
+							Q( "背包容量为："+ j +"  f["+i+"]["+j+"]：" + f[i][j] )
+
+							continue
+						}
+
+						//
+						if( j<weights[i] ){
+			            	//当前容量 放不下 商品，等于之前的最优值
+							f[i][j] = f[i-1][j] || 0
+
+							Q( "背包容量为："+ j +"  f["+i+"]["+j+"]：" + f[i][j] )
+
+							continue
+						}
+
+						//此物品，n0为 放入背包中，
+						var n0 = f[i-1][j-weights[i]]+values[i]
+						//此物品，n1 不放入背包中的价值
+		    			var n1 = f[i-1][j]
+
+
+		    			f[i][j] = Math.max(n0,n1)
+
+						Q( "背包容量为："+ j +"  f["+i+"]["+j+"]：" + f[i][j] )
+
+
+						Q( "n0："+ n0 +"  n1：" + n1 )
+
+					}
+
+
+				}
+
+				return f
+		}
+
+		//回溯
+		/*
+		f为矩阵数组
+		n为物品个数
+		w为背包容量
+		*/
+		function traceback(f, n, totalWeight)
+		{ 
+
+			Q("*********************************************")
+			
+			Q(f.length)
+			
+			//记录物品数组
+			var selectedArr = []
+			var j = totalWeight
+			var w = 0
+			f[-1] = new Array(totalWeight+1).fill(0)
+			for( var i=n-1; i>=0; i-- ){
+				if(f[i][j] > f[i-1][j]){
+					selectedArr.push(i)
+					Q("物品编号:"+i +"  重量"+weights[i] +"  价值"+values[i])	
+					j = j - weights[i]
+					w += weights[i] 
+				}
+			}
+			Q("最大承重："+totalWeight+"  当前背包承重:"+w+ " 总价值为："+f[n-1][totalWeight])
+			Q("*********************************************")
+
+			Q(f.length)
+
+			return selectedArr
+
+		}
+
+		function $(idName){
+			return this.window.document.getElementById(idName)
+		}
+
+		function writeDom($, string){
+			$.innerHTML = string
+		}
+
+		function Q(str){
+			console.log(str)
+		}
+		
+		//数组中去除重复的算法
+		Array.prototype.unique = function(){
+		    this.sort();
+		    var re=[this[0]];
+		    for(var i = 1; i < this.length; i++)
+		    {
+		      if( this[i] !== re[re.length-1])
+		      {
+		        re.push(this[i]);
+		      }
+		    }
+		    return re;
+		}
+	
+
+
+</script>
+</body>
+</html>

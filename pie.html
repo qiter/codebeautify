@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> New Document </TITLE>
+  <META NAME="Generator" CONTENT="EditPlus">
+  <META NAME="Author" CONTENT="">
+  <META NAME="Keywords" CONTENT="">
+  <META NAME="Description" CONTENT="">
+ </HEAD>
+
+ <BODY>
+
+  <div id="main"></div>
+  <SCRIPT LANGUAGE="JavaScript">
+  <!--
+
+	
+
+	//$("main").innerHTML = "--" + 
+
+	// 基本的信息
+	function Cake() {
+		this.cake_arr = [];    // 原始顺序
+		this.reverse_arr = []; // 翻转中的顺序
+		this.swap_arr = [];    // 记录翻转的路径，从第几个到第几个饼进行翻转
+		this.best_swap_arr = []; // 记录最优的路径
+		this.max_swap = 0;       // 最多翻转次数
+		this.search_times = 0;   // 搜索次数
+	}	
+	// 判断数组是否有序
+	Cake.prototype.isSorted = function (arr) {
+		for (var i = 1; i < arr.length; i++) {
+			if (arr[i] < arr[i - 1]) {
+				alert(i)
+				return false;
+			}
+		};
+		return true;
+	}
+	// 翻转数组
+	// begin: 为翻转部分的起始位置
+	// end为: 翻转部分的结束位置
+	Cake.prototype.reverse = function (arr,begin,end) {
+		for (var i = begin, j = end; i < j; i++, j--) {
+			var tmp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = tmp;
+		}
+	}
+	// 打印结果信息
+	Cake.prototype.printResult = function () {
+		console.log('搜索次数为:' + this.search_times + '次');
+		console.log('交换次数为:' + this.max_swap + '次');
+		console.log('交换次序为:');       
+		for (var i = 0; i < this.max_swap; i++) {
+			console.log(this.best_swap_arr[i]);
+		};
+	}
+
+	var arr = [3,2,1,6,5,4,7,0]
+	var arr = [1,2,3,4,5,6,7,8]
+	var pie = new Cake()
+	
+	pie.cake_arr = arr
+	
+	alert(pie.isSorted(arr))
+
+	//$("main").innerHTML += "A:"+a +"  --  B:"+b +"<br>"
+	function $(_name){
+		return document.getElementById(_name)
+	}
+
+	
+
+  //-->
+  </SCRIPT>
+ </BODY>
+</HTML>
