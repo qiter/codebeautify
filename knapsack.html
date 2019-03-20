@@ -13,6 +13,7 @@
 <div id="fArrBox"></div>
 <script language="javascript">
 		
+
 		//背包问题
 
 		var weights     =   [2, 2, 6, 5, 4]
@@ -57,6 +58,14 @@
 		}
 		writeDom($("fArrBox"), htmlStr)
 
+
+
+		//-----------------------------------
+		/*
+		weights 容量数组
+		values  物品价值数组
+		w       为背包最大容量
+		*/
 		function knapsake(weights, values, w){
 				//商品总数
 				var goodsTotal = weights.length
@@ -119,6 +128,7 @@
 		}
 
 		//回溯
+		//仔细观察矩阵，从${f(n-1,W)}$逆着走向${f(0,0)}$，设i=n-1,j=W，如果${f(i,j)}$==${f(i-1,j-w_i)+v_i}$说明包里面有第i件物品，因此我们只要当前行不等于上一行的总价值，就能挑出第i件物品，然后j减去该物品的重量，一直找到j = 0就行了。
 		/*
 		f为矩阵数组
 		n为物品个数
@@ -128,27 +138,27 @@
 		{ 
 
 			Q("*********************************************")
-			
-			Q(f.length)
-			
 			//记录物品数组
 			var selectedArr = []
 			var j = totalWeight
 			var w = 0
 			f[-1] = new Array(totalWeight+1).fill(0)
 			for( var i=n-1; i>=0; i-- ){
+				//当前最优值，大于上一次最优值，物品一定在包内
 				if(f[i][j] > f[i-1][j]){
+
+					//选择物品id
 					selectedArr.push(i)
+
 					Q("物品编号:"+i +"  重量"+weights[i] +"  价值"+values[i])	
+
+					//当前容器重量，减去对应物品重量，继续查找
 					j = j - weights[i]
 					w += weights[i] 
 				}
 			}
 			Q("最大承重："+totalWeight+"  当前背包承重:"+w+ " 总价值为："+f[n-1][totalWeight])
 			Q("*********************************************")
-
-			Q(f.length)
-
 			return selectedArr
 
 		}

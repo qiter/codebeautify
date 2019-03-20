@@ -1,7 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
  <HEAD>
-  <TITLE> �������� </TITLE>
+  <TITLE> 烙饼问题 </TITLE>
+  <meta charset="utf-8">
   <META NAME="Generator" CONTENT="EditPlus">
   <META NAME="Author" CONTENT="">
   <META NAME="Keywords" CONTENT="">
@@ -10,64 +11,174 @@
 
  <BODY>
 
+  <div id="info" style="color: #f63;font-size: 36px;">目前烙饼问题，目前不是最优解</div>
   <div id="main"></div>
   <SCRIPT LANGUAGE="JavaScript">
   <!--
 
 	
-
-	//$("main").innerHTML = "--" + 
-
-	// ��������Ϣ
-	function Cake() {
-		this.cake_arr = [];    // ԭʼ˳��
-		this.reverse_arr = []; // ��ת�е�˳��
-		this.swap_arr = [];    // ��¼��ת��·�����ӵڼ������ڼ��������з�ת
-		this.best_swap_arr = []; // ��¼���ŵ�·��
-		this.max_swap = 0;       // ��෭ת����
-		this.search_times = 0;   // ��������
+	
+	// 基本的信息
+	function pie() {
+		this.cake_arr =  [3,2,1,6,5,4,9,8,7,0];    // 原始顺序
+		this.search_times = 0;   // 搜索次数
 	}	
-	// �ж������Ƿ�����
-	Cake.prototype.isSorted = function (arr) {
+	// 判断数组是否有序
+	pie.prototype.isSorted = function (arr) {
 		for (var i = 1; i < arr.length; i++) {
 			if (arr[i] < arr[i - 1]) {
-				alert(i)
 				return false;
 			}
 		};
 		return true;
 	}
-	// ��ת����
-	// begin: Ϊ��ת���ֵ���ʼλ��
-	// endΪ: ��ת���ֵĽ���λ��
-	Cake.prototype.reverse = function (arr,begin,end) {
+	// 翻转数组
+	// begin: 为翻转部分的起始位置
+	// end为: 翻转部分的结束位置
+	pie.prototype.reverse = function (arr,begin,end) {
 		for (var i = begin, j = end; i < j; i++, j--) {
 			var tmp = arr[i];
 			arr[i] = arr[j];
 			arr[j] = tmp;
 		}
 	}
-	// ��ӡ�����Ϣ
-	Cake.prototype.printResult = function () {
-		console.log('��������Ϊ:' + this.search_times + '��');
-		console.log('��������Ϊ:' + this.max_swap + '��');
-		console.log('��������Ϊ:');       
-		for (var i = 0; i < this.max_swap; i++) {
-			console.log(this.best_swap_arr[i]);
-		};
+
+	pie.prototype.copyArr = function(arr){
+		var array = []
+		for(let i = 0;i<arr.length;i++){
+			array.push(arr[i])
+		}
+		return array
+	}
+	//寻找 当前翻转 下限
+	pie.prototype.lowerBound = function(arr){
+		var t, ret=0;
+		//根据当前数组的排序信息情况，来判断 最少需要交换多少次
+		for(var i = 1 ; i< arr.length; i++){
+			//判断位置相邻的两个烙饼，是否尺寸排序上相邻的
+			t = arr[i] - arr[i-1]
+			if(t==1 || t==-1){
+
+			}else{
+				ret ++
+			}
+		}
+		return ret
 	}
 
-	var arr = [3,2,1,6,5,4,7,0]
-	var arr = [1,2,3,4,5,6,7,8]
-	var pie = new Cake()
-	
-	pie.cake_arr = arr
-	
-	alert(pie.isSorted(arr))
+	pie.prototype.findGo = function(arr){
+		Q("原始数据 ")
+		Q(arr)
+		//复制原始数据 
+		var tempArr = this.copyArr(arr)
+		var orderArr = tempArr.sort(function(a,b){return b-a})
+		//获取数组中最大值
+		var orderArr_maxInt = orderArr[0] 
+		//
+		tempArr = this.copyArr(arr)
+		//获取最大值 在数组中的下标
+		var orderArr_sub = tempArr.indexOf(orderArr_maxInt)
+		//复制原始数据
+		tempArr = this.copyArr(arr)
+		//后半部
+		var lastGetArr = tempArr.splice( orderArr_sub+1, tempArr.length - orderArr_sub - 1 )
+		//前半部
+		var firstGetArr = tempArr.splice(0, orderArr_sub+1)
+		//Q( "最大值:"+orderArr_maxInt )
+		//Q( "最大值下标:"+orderArr_sub )
+		var firstReverse = firstGetArr.reverse()
+		Q("找到最大值"+orderArr_maxInt+"位置，翻盘前半部分")
+		Q(firstReverse)
+		//输出完整数组
+		var resultArr = firstGetArr.concat(lastGetArr)
+		Q("盘前半部数据，后半部数据合并")
+		Q(resultArr)
+		//输出完整数组 最后 再次翻转
+		var resultArr = resultArr.reverse()
 
+		Q("再整体 翻盘一次")
+		Q(resultArr)
+
+
+		Q("\n")
+
+		return {
+			maxValue     : orderArr_maxInt,
+			maxValueSub  : orderArr_sub,
+			resultArr    : resultArr
+		}
+	} 
+
+
+	
+
+	var htmlStr = ""
+
+	var pieObj = new pie()
+
+	Q("=====原始数组=====")
+	Q(pieObj.cake_arr)
+	
+
+	var resultObj = pieObj.findGo(pieObj.cake_arr)
+	var isSort = pieObj.isSorted(resultObj.resultArr)
+
+	pieObj.search_times++
+
+	while (!isSort) {
+		// statement
+
+		var tempArr = pieObj.copyArr(resultObj.resultArr)
+
+		tempArr.pop()
+
+		resultObj = pieObj.findGo(tempArr)
+
+		isSort = pieObj.isSorted(resultObj.resultArr)
+
+		//Q(resultObj.resultArr)
+
+		if(!isSort) pieObj.search_times++
+
+	}	
+
+	Q("既然2（N-1）是一个最多的翻转次数，就可以得知，如果算法中的翻转次数超过了2（N-1），我们就应该放弃这个算法。 最多的翻转次数: "+2*(pieObj.cake_arr.length -1)+"<br>")
+
+	Q("当前翻转 下限 次数："+pieObj.lowerBound(pieObj.cake_arr) +"<br>")
+
+	Q("搜寻总次数 search_times:"+pieObj.search_times*2)
+
+	//==========================================================
 	//$("main").innerHTML += "A:"+a +"  --  B:"+b +"<br>"
-	function $(_name){
-		return document.getElementById(_name)
+	function $(idName){
+		return this.window.document.getElementById(idName)
+	}
+
+	function writeDom($, string){
+		$.innerHTML = string
+	}
+
+	function Q(str){
+		console.log(str)
+
+		htmlStr += str +"<br>"
+
+		writeDom($("main"), htmlStr)
+
+	}
+	
+	//数组中去除重复的算法
+	Array.prototype.unique = function(){
+	    this.sort();
+	    var re=[this[0]];
+	    for(var i = 1; i < this.length; i++)
+	    {
+	      if( this[i] !== re[re.length-1])
+	      {
+	        re.push(this[i]);
+	      }
+	    }
+	    return re;
 	}
 
 	
